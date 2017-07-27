@@ -147,19 +147,20 @@ export default class TidePayAPIClass {
       });
   }
 
-  getTransactionDetail(tx_hash) {
-    return this.getDataApiUrl().
-      then((data_apiURL) => {
-        const url = `${data_apiURL}/transactions/${tx_hash}`
+  getTransactionDetail(tx_hash, options = {}) {
+    return this.getDataApiUrl()
+      .then((data_apiURL) => {
+        const qs = {
+          address: options.address,
+          currency: options.currency,
+          counterparty: options.counterparty,
+        };
+        const url = Utils.addQueryString(`${data_apiURL}/transactions/${tx_hash}`, qs);
 
-        return fetch(url).
-          then((resp) => {
-            return Utils.handleFetchResponse(resp);
-          })
-          .catch((err) => {
-            return Utils.handleFetchError(err, 'getTransactionsDetail');
-          });
-      })
+        return fetch(url)
+          .then((resp) => Utils.handleFetchResponse(resp))
+          .catch((err) => Utils.handleFetchError(err, 'getTransactionsDetail'));
+      });
   }
 
   getAccountTransactions(myAddress, options = {}) {
@@ -168,8 +169,10 @@ export default class TidePayAPIClass {
         const qs = {
           type: 'Payment',
           descending: true,
-          result: 'tesSUCCESS',
           currency: options.currency,
+          counterparty: options.counterparty,
+          rangeStart: options.rangeStart,
+          limit: options.limit,
           start: options.start,
           end: options.end,
         };
@@ -184,8 +187,6 @@ export default class TidePayAPIClass {
           });
       });
   }
-
-
 
   sendPayment(sourceAccount, payment) {
     const pconfig = {
