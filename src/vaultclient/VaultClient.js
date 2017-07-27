@@ -976,6 +976,17 @@ class VaultClientClass {
     .then(options => this.client.setUserJournalStatus(options))
     .then(result => this.setLoginToken(result));
   }
+
+  setAllUserJournalStatus(loginInfo, username, filter, read = true) {
+    return this.getLoginToken({
+      blob: loginInfo.blob,
+      username,
+      filter,
+      read,
+    })
+    .then(options => this.client.setAllUserJournalStatus(options))
+    .then(result => this.setLoginToken(result));
+  }
 }
 
 export default VaultClientClass;

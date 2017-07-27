@@ -1150,9 +1150,10 @@ export default {
 
   setUserJournalStatus(opts) {
     const { blob, username, journalId, read, loginToken } = opts;
+    const qs = { journalId };
     const config = {
       method: 'PUT',
-      url: `${blob.url}/v1/user/${username}/journals/${journalId}/status`,
+      url: Utils.addQueryString(`${blob.url}/v1/user/${username}/journals/status`, qs),
       authorization: loginToken,
       data: {
         read,
@@ -1169,6 +1170,34 @@ export default {
       })
       .catch((err) => {
         return Utils.handleFetchError(err, 'setUserJournalStatus');
+      });
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  },
+
+  setAllUserJournalStatus(opts) {
+    const { blob, username, filter, read, loginToken } = opts;
+    const qs = { messageId: filter };
+    const config = {
+      method: 'PUT',
+      url: Utils.addQueryString(`${blob.url}/v1/user/${username}/journals/status`, qs),
+      authorization: loginToken,
+      data: {
+        read,
+      },
+    };
+    try {
+      const signedRequest = new SignedRequest(config);
+      const signed = signedRequest.signHmac(blob.data.auth_secret, blob.id);
+      const options = Utils.makeFetchRequestOptions(config);
+
+      return fetch(signed.url, options)
+      .then((resp) => {
+        return fetchResponseDataAndLoginToken(resp);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'setAllUserJournalStatus');
       });
     } catch (err) {
       return Promise.reject(err);
