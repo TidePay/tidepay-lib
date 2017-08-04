@@ -104,7 +104,7 @@ export default class TidePayAPIClass {
   }
 
   /**
-   * Get the latest exchange rate
+   * Get the latest exchange rate from historical database
    * @param {String} base Base currency (3-letter code)
    * @param {String|Array} symbols Limit results to specific currencies (3-letter codes)
    */
@@ -124,13 +124,22 @@ export default class TidePayAPIClass {
       });
   }
 
-  // TODO
-  // previewExchange(fromCurrency, fromValue, toCurrency) {
-  // }
+  /**
+   * Get real-time exchange rate
+   * @param {String} base Base currency (3-letter code)
+   * @param {String} symbol Counter currency (3-letter codes)
+   */
+  getRealTimeExchangeRate(base, symbol) {
+    const url = `${this.isunpayrpcURL}/exchanges/rates/${base}/${symbol}`;
 
-  // TODO
-  // submigExchangeRequest() {
-  // }
+    return fetch(url)
+      .then((res) => {
+        return Utils.handleFetchResponse(res);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'getRealTimeExchangeRate');
+      });
+  }
 
   getAccountBalances(address, options = {}) {
     const url = Utils.addQueryString(`${this.isunpayrpcURL}/account/${address}/balances`, options);
@@ -272,28 +281,35 @@ export default class TidePayAPIClass {
   }
 
   exchangeCurrency(gatewayAddress, account, fromCurrency, fromValue, toCurrency, exchangeRate, clientMemo = null) {
+    const amount = {
+      currency: fromCurrency,
+      value: String(fromValue),
+      counterparty: gatewayAddress,
+    };
     const payment = {
       source: {
         address: account.address,
-        amount: {
-          currency: fromCurrency,
-          value: String(fromValue),
-          counterparty: gatewayAddress,
-        },
+        maxAmount: amount,
       },
       destination: {
-        address: account.address,
-        minAmount: {
-          currency: toCurrency,
-          value: String(fromValue * exchangeRate),
-          counterparty: gatewayAddress,
+        address: gatewayAddress,
+        amount: amount,
+      },
+    };
+    const memos = {
+      action: {
+        method: 'exchange_currency',
+        params: {
+          exchangeRate,
+          targetCurrency: toCurrency,
         },
+        notifyURI: '',
       },
     };
     if (clientMemo) {
-      const memos = { client: clientMemo };
-      payment.memos = convertMemos(memos);
+      memos.client = clientMemo;
     }
+    payment.memos = convertMemos(memos);
     return this.sendPayment(account, payment);
   }
 
