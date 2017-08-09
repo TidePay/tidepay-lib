@@ -215,6 +215,30 @@ export default class TidePayAPIClass {
       });
   }
 
+  getAccountExchanges(myAddress, options = {}) {
+    return this.getDataApiUrl()
+      .then((data_apiURL) => {
+        const qs = {
+          type: 'Payment',
+          descending: true,
+          counterparty: options.counterparty,
+          rangeStart: options.rangeStart,
+          limit: options.limit,
+          start: options.start,
+          end: options.end,
+        };
+        const url = Utils.addQueryString(`${data_apiURL}/accounts/${myAddress}/exchanges`, qs);
+
+        return fetch(url)
+          .then((resp) => {
+            return Utils.handleFetchResponse(resp);
+          })
+          .catch((err) => {
+            return Utils.handleFetchError(err, 'getAccountExchanges');
+          });
+      });
+  }
+
   sendPayment(sourceAccount, payment) {
     const pconfig = {
       method: 'POST',
