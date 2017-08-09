@@ -104,6 +104,21 @@ export default class TidePayAPIClass {
   }
 
   /**
+   * Get all supported exchange pairs of currencies.
+   */
+  getExchangePairs() {
+    const url = `${this.isunpayrpcURL}/exchangepair`;
+
+    return fetch(url)
+      .then((res) => {
+        return Utils.handleFetchResponse(res);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'getExchangePairs');
+      });
+  }
+
+  /**
    * Get the latest exchange rate from historical database
    * @param {String} base Base currency (3-letter code)
    * @param {String|Array} symbols Limit results to specific currencies (3-letter codes)
