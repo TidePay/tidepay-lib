@@ -120,13 +120,16 @@ export default class TidePayAPIClass {
 
   /**
    * Get the latest exchange rate from historical database
-   * @param {String} base Base currency (3-letter code)
+   * @param {String|Array} base Base currency (3-letter code)
    * @param {String|Array} symbols Limit results to specific currencies (3-letter codes)
    */
   getExchangeRate(base = null, symbols = null) {
     return this.getDataApiUrl()
       .then((dataApiUrl) => {
         const qs = { base, symbols };
+        if (Array.isArray(base)) {
+          qs.multipleBase = true;
+        }
         const url = Utils.addQueryString(`${dataApiUrl}/exchange/rates`, qs);
 
         return fetch(url);
