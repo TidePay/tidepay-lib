@@ -144,14 +144,13 @@ class VaultClientClass {
 
   setLoginToken(result) {
     const { loginToken, data } = result;
-    const { loginToken: loginTokenInOldWay, ...rest } = data;
     if (loginToken !== undefined) {
       return this.writeLoginTokenCb(loginToken)
-        .then(() => rest);
+      .then(() => data);
     }
-    return Promise.resolve(rest);
+    return Promise.resolve(data);
   }
-
+  
   setAuthLoginToken(resp) {
     const { loginToken, data } = resp;
     if (loginToken !== undefined) {
@@ -318,11 +317,11 @@ class VaultClientClass {
       .then(newCustomKeys => activateAccount(newCustomKeys, unlockSecret))
       .then((resp) => {
         const { newCustomKeys, resolved } = resp;
-        const { result, loginToken, newBlobData } = resolved;
+        const { result, newBlobData } = resolved;
         const resultLoginInfo = updateLoginInfo(loginInfo, result, newBlobData);
         const resultCustomKeys = updateCustomKeys(newCustomKeys, result);
         return this.writeCustomKeysCb(resultCustomKeys)
-          .then(() => Promise.resolve({ loginInfo: resultLoginInfo, loginToken }));
+          .then(() => Promise.resolve({ loginInfo: resultLoginInfo }));
       });
   }
 
