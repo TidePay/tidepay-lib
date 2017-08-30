@@ -1203,4 +1203,55 @@ export default {
       return Promise.reject(err);
     }
   },
+
+  getEmailNotificationSettings(opts) {
+    const { blob, username, loginToken } = opts;
+    const config = {
+      method: 'GET',
+      url: `${blob.url}/v1/user/${username}/notifications/email`,
+      authorization: loginToken,
+    };
+    try {
+      const signedRequest = new SignedRequest(config);
+      const signed = signedRequest.signHmac(blob.data.auth_secret, blob.id);
+      const options = Utils.makeFetchRequestOptions(config);
+
+      return fetch(signed.url, options)
+      .then((resp) => {
+        return fetchResponseDataAndLoginToken(resp);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'getEmailNotificationSettings');
+      });
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  },
+
+  setEmailNotificationSettings(opts) {
+    const { blob, username, ids, loginToken } = opts;
+    const config = {
+      method: 'PUT',
+      url: `${blob.url}/v1/user/${username}/notifications/email`,
+      authorization: loginToken,
+      data: {
+        ids,
+      },
+    };
+    try {
+      const signedRequest = new SignedRequest(config);
+      const signed = signedRequest.signHmac(blob.data.auth_secret, blob.id);
+      const options = Utils.makeFetchRequestOptions(config);
+
+      return fetch(signed.url, options)
+      .then((resp) => {
+        return fetchResponseDataAndLoginToken(resp);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'setEmailNotificationSettings');
+      });
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  },
 };

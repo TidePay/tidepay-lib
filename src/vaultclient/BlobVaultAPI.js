@@ -326,3 +326,7 @@ BlobVaultAPI.prototype.getUserJournalsUnreadCount = BlobAPI.getUserJournalsUnrea
 BlobVaultAPI.prototype.setUserJournalStatus = BlobAPI.setUserJournalStatus;
 
 BlobVaultAPI.prototype.setAllUserJournalStatus = BlobAPI.setAllUserJournalStatus;
+
+BlobVaultAPI.prototype.getEmailNotificationSettings = BlobAPI.getEmailNotificationSettings;
+
+BlobVaultAPI.prototype.setEmailNotificationSettings = BlobAPI.setEmailNotificationSettings;

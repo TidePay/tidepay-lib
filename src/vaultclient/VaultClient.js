@@ -986,6 +986,25 @@ class VaultClientClass {
     .then(options => this.client.setAllUserJournalStatus(options))
     .then(result => this.setLoginToken(result));
   }
+
+  getEmailNotificationSettings(loginInfo, username) {
+    return this.getLoginToken({
+      blob: loginInfo.blob,
+      username,
+    })
+    .then(options => this.client.getEmailNotificationSettings(options))
+    .then(result => this.setLoginToken(result));
+  }
+
+  setEmailNotificationSettings(loginInfo, username, emailIds) {
+    return this.getLoginToken({
+      blob: loginInfo.blob,
+      username,
+      ids: emailIds,
+    })
+    .then(options => this.client.setEmailNotificationSettings(options))
+    .then(result => this.setLoginToken(result));
+  }
 }
 
 export default VaultClientClass;
