@@ -712,6 +712,96 @@ class VaultClientClass {
       });
   }
 
+  authRequestSetupPhone2FA(loginInfo, phone) {
+    const _authRequestSetupPhone2FA = (username, blob) => {
+      const { countryCode, phoneNumber } = phone;
+
+      return this.getLoginToken({
+        url: blob.url,
+        blob,
+        username,
+        data: {
+          countryCode,
+          phoneNumber,
+          via: 'sms',
+        },
+      })
+      .then(options => this.client.authRequestSetupPhone2FA(options));
+    };
+
+    return _authRequestSetupPhone2FA(loginInfo.username, loginInfo.blob)
+      .then(result => this.setLoginToken(result))
+      .then((resp) => {
+        const { result, ...restResp } = resp;
+        const resultLoginInfo = updateLoginInfo(loginInfo, result);
+        return Promise.resolve({ ...restResp, loginInfo: resultLoginInfo });
+      });
+  }
+
+  authVerifyAndUpdatePhone2FA(loginInfo, phone, phoneToken, authToken, newBlob, hasPaymentPin = false) {
+    const verify = (blob, username) => {
+      const { phoneNumber, countryCode } = phone;
+      const data = {
+        countryCode,
+        phoneNumber,
+        phoneToken,
+        authToken,
+      };
+      return this.getLoginToken({
+        url: blob.url,
+        blob,
+        username,
+        data,
+      })
+      .then(options => this.client.authVerifyPhone2FA(options));
+    };
+    const update = (blob, username, verifyResult) => {
+      const { phoneNumber, countryCode } = phone;
+      const {
+        authToken: newAuthToken,
+        encrypted_secretdecrypt_key,
+      } = verifyResult;
+
+      const data = {
+        countryCode,
+        phoneNumber,
+        phoneToken,
+        authToken: newAuthToken,
+        data: newBlob.encrypt(),
+        revision: newBlob.revision,
+      };
+      if (hasPaymentPin) {
+        const recoveryKey = VCUtils.createSecretRecoveryKey(blob.data.phone, blob.data.unlock_secret);
+        const newRecoveryKey = VCUtils.createSecretRecoveryKey(phone, blob.data.unlock_secret);
+        const secretCryptKey = BlobObj.decryptBlobCrypt(recoveryKey, encrypted_secretdecrypt_key);
+        data.encrypted_secretdecrypt_key = BlobObj.encryptBlobCrypt(newRecoveryKey, secretCryptKey);
+      }
+
+      return this.getLoginToken({
+        url: blob.url,
+        blob,
+        username,
+        data,
+      })
+      .then(options => this.client.authUpdatePhone2FA(options));
+    };
+
+    const { blob, username } = loginInfo;
+    return this.readCustomKeysCb()
+      .then((customKeys) => {
+        return verify(blob, username)
+          .then(result => this.setLoginToken(result))
+          .then(result => update(blob, username, result))
+          .then((resp) => {
+            const { result, ...restResp } = resp;
+            const resultLoginInfo = updateLoginInfo(loginInfo, result, newBlob.data);
+            const resultCustomKeys = updateCustomKeys(customKeys, result);
+            return this.writeCustomKeysCb(resultCustomKeys)
+              .then(() => Promise.resolve({ ...restResp, loginInfo: resultLoginInfo }));
+          });
+      });
+  }
+
   handleRecovery(resp, email) {
     const { username } = resp;
     return this.client.getByUsername(username)
