@@ -843,7 +843,7 @@ class VaultClientClass {
     });
   }
 
-  addBankAccount(loginInfo, bankAccountInfo, updateBlobDataCallback) {
+  addBankAccount(loginInfo, bankAccountInfo, bankAccountImg, updateBlobDataCallback) {
     const newLoginInfo = cloneLoginInfo(loginInfo);
 
     updateBlobDataCallback(newLoginInfo.blob.data);
@@ -851,6 +851,7 @@ class VaultClientClass {
     return this.getLoginToken({
       blob: newLoginInfo.blob,
       bankAccountInfo,
+      bankAccountImg,
     })
     .then(options => this.client.addBankAccount(options))
     .then(result => this.setLoginToken(result))
