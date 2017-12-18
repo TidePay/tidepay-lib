@@ -843,6 +843,27 @@ class VaultClientClass {
     });
   }
 
+  savePhotos(loginInfo, formData) {
+    return this.getLoginToken({
+      blob: loginInfo.blob,
+      formData,
+    })
+    .then(options => this.client.savePhotos(options))
+    .then((resp) => {
+      return Promise.resolve({ resp });
+    });
+  }
+
+  getIdInfo(loginInfo) {
+    return this.getLoginToken({
+      blob: loginInfo.blob,
+    })
+    .then(options => this.client.getIdInfo(options))
+    .then((resp) => {
+      return Promise.resolve({ resp });
+    });
+  }
+
   addBankAccount(loginInfo, bankAccountInfo, bankAccountImg, updateBlobDataCallback) {
     const newLoginInfo = cloneLoginInfo(loginInfo);
 

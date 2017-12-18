@@ -1029,6 +1029,39 @@ export default {
       });
   },
 
+  savePhotos(opts) {
+    const config = {
+      method: 'POST',
+      data: opts.formData,
+      authorization: opts.loginToken,
+    };
+    const options = Utils.makeFetchRequestOptions(config);
+    const url = `${opts.blob.url}/v1/blob/${opts.blob.id}/saveId`;
+    return fetch(url, options)
+      .then((resp) => {
+        return fetchResponseDataAndLoginToken(resp);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'savePhotos');
+      });
+  },
+
+  getIdInfo(opts) {
+    const config = {
+      method: 'POST',
+      authorization: opts.loginToken,
+    };
+    const options = Utils.makeFetchRequestOptions(config);
+    const url = `${opts.blob.url}/v1/blob/${opts.blob.id}/getIdInfo`;
+    return fetch(url, options)
+      .then((resp) => {
+        return fetchResponseDataAndLoginToken(resp);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'getPhotos');
+      });
+  },
+
   logoutAccount(opts) {
     const { blob, loginToken } = opts;
     const config = {
