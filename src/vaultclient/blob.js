@@ -545,6 +545,81 @@ export default {
     }
   },
 
+  authRequestSetupPhone2FA(opts) {
+    const config = {
+      method : 'POST',
+      url    : `${opts.url}/v1/user/${opts.username}/initial_login/request`,
+      data   : opts.data,
+      authorization: opts.loginToken,
+    };
+
+    try {
+      const signedRequest = new SignedRequest(config);
+      const signed = signedRequest.signHmac(opts.blob.data.auth_secret, opts.blob.id);
+      const options = Utils.makeFetchRequestOptions(config);
+
+      return fetch(signed.url, options)
+      .then((resp) => {
+        return fetchResponseDataAndLoginToken(resp);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'authRequestSetupPhone2FA');
+      });
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  },
+
+  authVerifyPhone2FA(opts) {
+    const config = {
+      method : 'POST',
+      url    : `${opts.url}/v1/user/${opts.username}/initial_login/verify`,
+      data   : opts.data,
+      authorization: opts.loginToken,
+    };
+
+    try {
+      const signedRequest = new SignedRequest(config);
+      const signed = signedRequest.signHmac(opts.blob.data.auth_secret, opts.blob.id);
+      const options = Utils.makeFetchRequestOptions(config);
+
+      return fetch(signed.url, options)
+      .then((resp) => {
+        return fetchResponseDataAndLoginToken(resp);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'authVerifyPhone2FA');
+      });
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  },
+
+  authUpdatePhone2FA(opts) {
+    const config = {
+      method : 'POST',
+      url    : `${opts.url}/v1/user/${opts.username}/initial_login/update`,
+      data   : opts.data,
+      authorization: opts.loginToken,
+    };
+
+    try {
+      const signedRequest = new SignedRequest(config);
+      const signed = signedRequest.signHmac(opts.blob.data.auth_secret, opts.blob.id);
+      const options = Utils.makeFetchRequestOptions(config);
+
+      return fetch(signed.url, options)
+      .then((resp) => {
+        return fetchResponseDataAndLoginToken(resp);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'authUpdatePhone2FA');
+      });
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  },
+
   /**
    * Create a blob object
    *

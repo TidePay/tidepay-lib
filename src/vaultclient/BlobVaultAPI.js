@@ -299,6 +299,12 @@ BlobVaultAPI.prototype.authVerifyUpdatePhone = BlobAPI.authVerifyUpdatePhone;
 
 BlobVaultAPI.prototype.authUpdatePhone = BlobAPI.authUpdatePhone;
 
+BlobVaultAPI.prototype.authRequestSetupPhone2FA = BlobAPI.authRequestSetupPhone2FA;
+
+BlobVaultAPI.prototype.authVerifyPhone2FA = BlobAPI.authVerifyPhone2FA;
+
+BlobVaultAPI.prototype.authUpdatePhone2FA = BlobAPI.authUpdatePhone2FA;
+
 BlobVaultAPI.prototype.authLogin = BlobAPI.authLogin;
 
 BlobVaultAPI.prototype.getBlob = BlobAPI.getBlob;
