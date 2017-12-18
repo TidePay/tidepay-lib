@@ -673,14 +673,16 @@ export default {
    */
 
   addBankAccount(opts) {
+    const formData = new FormData();
+    formData.append('data', opts.blob.encrypt());
+    formData.append('revision', opts.blob.revision);
+    formData.append('bankName', opts.bankAccountInfo.bankName);
+    formData.append('bankAccountNumber', opts.bankAccountInfo.bankAccountNumber);
+    formData.append('bankAccountImg', opts.bankAccountImg);
     const config = {
       method: 'POST',
       url: `${opts.blob.url}/v1/blob/${opts.blob.id}/bankaccount`,
-      data: {
-        data     : opts.blob.encrypt(),
-        revision : opts.blob.revision,
-        bank_account_info: opts.bankAccountInfo,
-      },
+      data: formData,
       authorization: opts.loginToken,
     };
 
