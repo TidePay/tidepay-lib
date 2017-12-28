@@ -1364,4 +1364,37 @@ export default {
       return Promise.reject(err);
     }
   },
+
+  /**
+   * hidePromo
+   * hide promotion page after fist view
+   * @params {object}  opts
+   */
+
+  hidePromo(opts) {
+    const config = {
+      method : 'POST',
+      url    : `${opts.blob.url}/v1/blob/${opts.blob.id}/togglePromo`,
+      data   : {
+        enabled     : false,
+      },
+      authorization: opts.loginToken,
+    };
+
+    try {
+      const signedRequest = new SignedRequest(config);
+      const signed = signedRequest.signHmac(opts.blob.data.auth_secret, opts.blob.id);
+      const options = Utils.makeFetchRequestOptions(config);
+
+      return fetch(signed.url, options)
+      .then((resp) => {
+        return fetchResponseDataAndLoginToken(resp);
+      })
+      .catch((err) => {
+        return Utils.handleFetchError(err, 'hidePromo');
+      });
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  },
 };

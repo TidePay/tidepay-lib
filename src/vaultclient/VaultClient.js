@@ -1117,6 +1117,19 @@ class VaultClientClass {
     .then(options => this.client.setEmailNotificationSettings(options))
     .then(result => this.setLoginToken(result));
   }
+
+  hidePromo(loginInfo) {
+    const { blob } = loginInfo;
+    return this.getLoginToken({
+      blob,
+    })
+    .then(options => BlobAPI.hidePromo(options))
+    .then(result => {
+      const newLoginInfo = cloneLoginInfo(loginInfo);
+      newLoginInfo.blob.display_promo = false;
+      return Promise.resolve({ ...result, newLoginInfo })
+    });
+  }
 }
 
 export default VaultClientClass;
